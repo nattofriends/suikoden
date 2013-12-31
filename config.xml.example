@@ -1,0 +1,23 @@
+<config>
+    <!-- The location of a DNS zone file fragment; only the most basic of zone file syntax can be parsed -->
+    <bind-config>/etc/bind/zones/db.example.com.in</bind-config>
+    <!-- The location of a nginx configuration fragment -->
+    <nginx-config>/etc/nginx/sites-available/example</nginx-config>
+    <!-- The filesystem path that local aliases are relative to -->
+	<local-root>/var/www</local-root>
+    <!-- The base domain these aliases are children of in the DNS i.e. $ORIGIN --> 
+	<domain-base>example.com</domain-base>
+    <!-- The name that aliases should resolve to in the DNS -->
+    <resolve-to>host.example.com.</resolve-to>
+
+    <!-- A local alias that will show /var/www/example1.html at alias1.example.com -->
+    <alias name="alias1" type="local" value="example1.html" />
+    <!-- An alias that redirects to another site entirely -->
+    <alias name="alias2" type="redirect" value="http://www.example.net" />
+    <!-- An alias which only has a CNAME to another host (and no representation in nginx configuration -->
+    <alias name="alias3" type="cname" value="www.example.net." />
+    <!-- An alias which doesn't have automatically populated nginx directives, value attribute is ignored -->
+    <alias name="alias4" type="diy" value="">
+        <nginx-directive>listen 8080</nginx-directive>
+    </alias>
+</config>

@@ -1,0 +1,13 @@
+element config {
+    element bind-config { text }
+    & element nginx-config { text }
+    & element domain-base { text }
+    & element local-root { text }
+    & element resolve-to { text }
+    & element alias {
+        attribute name { text }
+        & attribute type { text }
+        & attribute value { text } 
+        & element nginx-directive { text }*
+    }+
+}
