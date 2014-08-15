@@ -1,7 +1,7 @@
-sua-manage
+suikoden
 ==========
 
-sua-manage is a tool to manage single-use aliases, automatically updating nginx and bind configurations.
+suikoden is a tool to manage single-use aliases and applications, automatically updating nginx and bind configurations.
 
 Requirements
 ----
