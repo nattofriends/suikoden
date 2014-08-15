@@ -1,3 +1,5 @@
+import re
+
 import pyparsing
 from pyparsing import Suppress
 from pyparsing import Regex
@@ -8,7 +10,7 @@ from ..handler import SubhandlerBase
 
 class BindHandler(Handler):
 
-    comment = Suppress(Regex(";.*"))
+    comment = Regex(";.*").setResultsName("comment")
     rr = Word(pyparsing.alphanums + '.-').setResultsName("key") + Suppress("IN") + Suppress("CNAME") + pyparsing.Word(pyparsing.alphanums + '.').setResultsName("value")
     line = comment ^ rr ^ pyparsing.empty
     out = "{}\tIN\tCNAME\t{}\n".format
@@ -22,13 +24,19 @@ class BindHandler(Handler):
         # this was a good idea?
 
         self._init_subhandlers()
+        self.new_comments = []
 
         if self.args.force:
             self.entries = {}
             self.names =[]
         else:
+            # lol unused info.
+            comments = [re.match("; (.*):(.*)", r.comment) for r in self.entries if 'comment' in r]
+            comments = [m.groups(0) for m in comments if m]
+            existing = [name for name, _ in comments]
             self.entries = {r.key: r.value for r in self.entries if {'key', 'value'}.symmetric_difference(list(r.keys())) == set()}
             self.names = list(self.entries.keys())
+            self.names.extend(existing)
 
     def _init_subhandlers(self):
         self.subhandlers = {
@@ -42,6 +50,7 @@ class BindHandler(Handler):
     def flush(self):
         output = sorted([BindHandler.out(*t) for t in list(self.entries.items())])
         with open(self.bind_config, 'w') as file:
+            file.writelines(self.new_comments)
             file.writelines(output)
 
 class BindAliasHandler(SubhandlerBase):
@@ -65,7 +74,7 @@ class BindAppHandler(SubhandlerBase):
             name = app.get("external-name")
         elif app.get("dns-name"):
             name = app.get("dns-name")
-        # If there's no externa; configuration, forget about it!
+        # If there's no external configuration, forget about it!
         else:
             return
 
@@ -74,4 +83,7 @@ class BindAppHandler(SubhandlerBase):
 
         self.handler.log("Writing {} to bind configuration".format(app.get('name')))
         self.handler.entries[name] = self.handler.config.resolve_to
+
+        if app.get("name") != name:
+            self.handler.new_comments.append("; {}:{}\n".format(app.get("name"), name))
 
