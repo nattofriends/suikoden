@@ -33,10 +33,14 @@ class BindHandler(Handler):
             # lol unused info.
             comments = [re.match("; (.*):(.*)", r.comment) for r in self.entries if 'comment' in r]
             comments = [m.groups(0) for m in comments if m]
-            existing = [name for name, _ in comments]
+            existing = [name for name, dns_name in comments]
             self.entries = {r.key: r.value for r in self.entries if {'key', 'value'}.symmetric_difference(list(r.keys())) == set()}
             self.names = list(self.entries.keys())
             self.names.extend(existing)
+
+            # Preserve comments.
+            for name, dns_name in comments:
+                self.new_comments.append("; {}:{}\n".format(name, dns_name))
 
     def _init_subhandlers(self):
         self.subhandlers = {
