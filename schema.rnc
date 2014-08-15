@@ -16,7 +16,8 @@ nginx-block = element nginx-block {
 # This is if the server_name and the DNS entry have different
 # names (i.e. for wildcards).
 config = element config {
-    element bind-config { text }
+    element bind-master { text }
+    & element bind-config { text }
     & element nginx-config { text }
     & element domain-base { text }
     & element local-root { text }

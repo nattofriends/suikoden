@@ -1,5 +1,6 @@
 from .confparse import ConfParse
 from .handler import Handler
+from .script import increment_zone, reload_services
 from .util import perm_check, parser
 
 # There are better solutions to this...
@@ -19,6 +20,7 @@ def list_apps(args):
     mdh = Handler.instance_by_class(MakefileHandler)
     mdh.list_apps()
 
+
 if __name__ == "__main__":
     perm_check()
 
@@ -26,6 +28,9 @@ if __name__ == "__main__":
 
     if args.list_apps:
         list_apps(args)
-
+    elif args.increment_zone:
+        increment_zone(config)
+    elif args.reload_services:
+        reload_services(config)
     else:
         run_handlers(args)
