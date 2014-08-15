@@ -1,13 +1,42 @@
-element config {
+start = config
+
+nginx-directive = element nginx-directive { text }
+nginx-block = element nginx-block {
+    attribute name { text },
+    attribute arguments { text }?,
+    (nginx-block | nginx-directive)+
+}
+
+# The author of rnc2rng had some crazy ideas so these comments can't
+# be indented.
+# An application may have no external-name,
+# in which case it will not have a server_name directive.
+# Or it can have a http-name and a dns-name instead,
+# which is restricted at the application level. 
+# This is if the server_name and the DNS entry have different
+# names (i.e. for wildcards).
+config = element config {
     element bind-config { text }
     & element nginx-config { text }
     & element domain-base { text }
     & element local-root { text }
     & element resolve-to { text }
     & element alias {
-        attribute name { text }
-        & attribute type { text }
-        & attribute value { text } 
-        & element nginx-directive { text }*
-    }+
+        attribute name { text },
+        attribute type { text },
+        attribute value { text },
+        (nginx-block | nginx-directive)*
+    }*
+    & element app {
+        attribute name { text },
+
+        attribute external-name { text }?,
+        attribute http-name { text }?,
+        attribute dns-name { text }?,
+
+        attribute port { text },
+        attribute port-format { text },
+        attribute path { text },
+        (nginx-block | nginx-directive)*
+    }*
 }

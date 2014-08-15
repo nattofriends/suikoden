@@ -1,4 +1,7 @@
-lxml==3.2.4
-pyparsing==1.5.5
--e git+https://github.com/fatiherikli/nginxparser#egg=nginxparser
--e git+https://github.com/nattofriends/rnc2rng#egg=rnc2rng
+lxml
+funcparserlib
+namedlist
+pyparsing
+tabulate
+
+git+https://github.com/nattofriends/rnc2rng#egg=rnc2rng
