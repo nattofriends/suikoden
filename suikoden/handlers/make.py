@@ -1,9 +1,14 @@
+from contextlib import contextmanager
+from subprocess import check_output
+from sys import stdout
 import os
 
 from tabulate import tabulate
 
 from ..handler import Handler
-from ..handler import SubhandlerBase
+
+
+run = lambda cmd: stdout.write(str(check_output(cmd, shell=True), encoding='utf-8'))
 
 
 class MakefileHandler(Handler):
@@ -37,8 +42,22 @@ class MakefileHandler(Handler):
         display_rows = [
             (app.get("name"),
              app.get("external-name") if app.get("external-name") else app.get("dns-name") if app.get("dns-name") else "[internal]",
-             app.get("port")
+             app.get("port"),
+             app.get("path")
             ) for app in self.apps
         ]
 
-        print(tabulate(display_rows, headers=('Name', 'Server Name', 'Port')))
+        print(tabulate(display_rows, headers=('Name', 'Server Name', 'Port', 'Path')))
+
+    def start_apps(self):
+        @contextmanager
+        def indir(dir):
+            old = os.getcwd()
+            os.chdir(dir)
+            yield
+            os.chdir(old)
+
+        for app in self.apps:
+            with indir(app.get("path")):
+                print("Starting {}".format(app.get("name")))
+                run("make")

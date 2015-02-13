@@ -11,7 +11,7 @@ from ..handler import SubhandlerBase
 class BindHandler(Handler):
 
     comment = Regex(";.*").setResultsName("comment")
-    rr = Word(pyparsing.alphanums + '.-').setResultsName("key") + Suppress("IN") + Suppress("CNAME") + pyparsing.Word(pyparsing.alphanums + '.').setResultsName("value")
+    rr = Word(pyparsing.alphanums + '.-*').setResultsName("key") + Suppress("IN") + Suppress("CNAME") + pyparsing.Word(pyparsing.alphanums + '.').setResultsName("value")
     line = comment ^ rr ^ pyparsing.empty
     out = "{}\tIN\tCNAME\t{}\n".format
 

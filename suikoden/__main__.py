@@ -20,6 +20,11 @@ def list_apps(args):
     mdh = Handler.instance_by_class(MakefileHandler)
     mdh.list_apps()
 
+def start_apps(args):
+    Handler.instantiate(config, args)
+    Handler.run(config.all("alias", "app"))
+    mdh = Handler.instance_by_class(MakefileHandler)
+    mdh.start_apps()
 
 if __name__ == "__main__":
     perm_check()
@@ -28,6 +33,8 @@ if __name__ == "__main__":
 
     if args.list_apps:
         list_apps(args)
+    elif args.start_apps:
+        start_apps(args)
     elif args.increment_zone:
         increment_zone(config)
     elif args.reload_services:
