@@ -50,6 +50,14 @@ class NginxAliasHandler(SubhandlerBase):
         server_directives = [d.text.split(" ", 1) for d in alias.findall('nginx-directive')]
         server_directives = [Directive(name, [values]) for name, values in server_directives]
 
+        server_directives.extend([
+            Directive("listen", ["80"]),
+            Directive("listen", ["443 ssl spdy"]),
+            Block("if", ["($scheme = http)"], [
+                Directive("return", ["301 https://$host$request_uri"]),
+            ]),
+        ])
+
         type = alias.get('type')
         if type == 'local':
             self._add(
